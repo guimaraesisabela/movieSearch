@@ -8,7 +8,7 @@ async function loadMovies(searchTerm) {
     try {
         const res = await fetch(URL);
         const data = await res.json();
-        console.log(data); // Adicione isso para depuração
+        console.log(data); // Depuração
         if (data.Response == "True") {
             displayMovieList(data.Search);
         } else {
@@ -29,7 +29,6 @@ function findMovies() {
         searchList.classList.add('hideSearchList');
     }
 }
-
 
 movieSearchBox.addEventListener('input', findMovies);
 
@@ -52,17 +51,17 @@ function displayMovieList(movies) {
         `;
         searchList.appendChild(movieListItem);
     }
-    loadMovieDetails();
+    attachMovieClickEvents();
 }
-function loadMovieDetails() {
+
+function attachMovieClickEvents() {
     const searchListMovies = searchList.querySelectorAll('.searchListItem');
     searchListMovies.forEach(movie => {
         movie.addEventListener('click', async () => {
-            searchList.classList.add('hideSearchList');
-            movieSearchBox.value = "";
+            searchList.classList.add('hideSearchList'); // Fecha o dropdown
+            movieSearchBox.value = ""; // Limpa o campo de busca
             const result = await fetch(`http://www.omdbapi.com/?i=${movie.dataset.id}&apikey=817454c0`);
             const movieDetails = await result.json();
-            console.log(movieDetails); // Adicione isso para depuração
             displayMovieDetails(movieDetails);
         });
     });
@@ -90,9 +89,10 @@ function displayMovieDetails(details) {
     `;
 }
 
+// Listener global para cliques fora do dropdown
 window.addEventListener('click', (event) => {
-    if (event.target.className != "formControl") {
+    // Verifica se o clique foi fora do campo de busca ou da lista de sugestões
+    if (!searchList.contains(event.target) && event.target !== movieSearchBox) {
         searchList.classList.add('hideSearchList');
     }
 });
-
